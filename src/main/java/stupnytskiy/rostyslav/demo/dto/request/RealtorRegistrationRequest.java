@@ -26,8 +26,6 @@ public class RealtorRegistrationRequest {
     @NotNull
     private String phoneNumber;
 
-    private String email;
-
     private String image;
 
     private Long regionId;

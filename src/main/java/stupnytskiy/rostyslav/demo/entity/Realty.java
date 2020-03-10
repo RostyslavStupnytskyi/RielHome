@@ -58,9 +58,6 @@ public class Realty {
     @ManyToOne
     private HomeType homeType;
 
-    @ManyToOne
-    private Region region;
-
     @OneToOne(cascade = CascadeType.ALL)
     private Address address;
 

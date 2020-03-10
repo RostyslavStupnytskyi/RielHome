@@ -9,12 +9,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import stupnytskiy.rostyslav.demo.dto.request.FirmRegistrationRequest;
 import stupnytskiy.rostyslav.demo.dto.request.LoginRequest;
-import stupnytskiy.rostyslav.demo.dto.request.UserRegistrationRequest;
 import stupnytskiy.rostyslav.demo.dto.response.AuthenticationResponse;
-import stupnytskiy.rostyslav.demo.entity.User;
+import stupnytskiy.rostyslav.demo.entity.Firm;
 import stupnytskiy.rostyslav.demo.entity.UserRole;
-import stupnytskiy.rostyslav.demo.repository.UserRepository;
+import stupnytskiy.rostyslav.demo.repository.FirmRepository;
 import stupnytskiy.rostyslav.demo.security.JwtTokenTool;
 import stupnytskiy.rostyslav.demo.security.JwtUser;
 
@@ -22,10 +22,10 @@ import java.io.IOException;
 
 
 @Service
-public class UserService implements UserDetailsService {
+public class FirmService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private FirmRepository firmRepository;
 
 
     @Autowired
@@ -40,44 +40,43 @@ public class UserService implements UserDetailsService {
 
 
 
-    public AuthenticationResponse register(UserRegistrationRequest request) throws IOException {
-        if (userRepository.existsByLogin(request.getLogin())) {
-            throw new BadCredentialsException("User with username " + request.getLogin() + " already exists");
+    public AuthenticationResponse register(FirmRegistrationRequest request) throws IOException {
+        if (firmRepository.existsByLogin(request.getLogin())) {
+            throw new BadCredentialsException("Firm with login " + request.getLogin() + " already exists");
         }
-        User user = new User();
-        user.setLogin(request.getLogin());
-        user.setUserRole(UserRole.ROLE_USER);
-        user.setPassword(encoder.encode(request.getPassword()));
-        user.setUsername(request.getUsername());
-        userRepository.save(user);
+        Firm firm = new Firm();
+        firm.setLogin(request.getLogin());
+        firm.setUserRole(UserRole.ROLE_FIRM);
+        firm.setPassword(encoder.encode(request.getPassword()));
+        firmRepository.save(firm);
         return login(registrationToLogin(request));
     }
 
     public AuthenticationResponse login(LoginRequest request) {
         String login = request.getLogin();
-        User user = findByLogin(login);
+        Firm firm = findByLogin(login);
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, request.getPassword()));
-        String token = jwtTokenTool.createToken(login, user.getUserRole());
-        String name = user.getUsername();
-        Long id = user.getId();
+        String token = jwtTokenTool.createToken(login, firm.getUserRole());
+        String name = firm.getName();
+        Long id = firm.getId();
         return new AuthenticationResponse(name,token,id);
     }
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        User user = findByLogin(login);
-        return new JwtUser(user.getLogin(), user.getUserRole(), user.getPassword());
+        Firm firm = findByLogin(login);
+        return new JwtUser(firm.getLogin(), firm.getUserRole(), firm.getPassword());
     }
 
-    public User findByLogin(String username)  {
-        return userRepository.findByLogin(username).orElseThrow(() -> new UsernameNotFoundException("User with login " + username + " not exists"));
+    public Firm findByLogin(String username)  {
+        return firmRepository.findByLogin(username).orElseThrow(() -> new UsernameNotFoundException("User with login " + username + " not exists"));
     }
 
-    public User findById(Long id)  {
-        return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User with id " + id + " not exists"));
+    public Firm findById(Long id)  {
+        return firmRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Firm with id " + id + " not exists"));
     }
 
-    private LoginRequest registrationToLogin(UserRegistrationRequest registrationRequest){
+    private LoginRequest registrationToLogin(FirmRegistrationRequest registrationRequest){
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setLogin(registrationRequest.getLogin());
         loginRequest.setPassword(registrationRequest.getPassword());

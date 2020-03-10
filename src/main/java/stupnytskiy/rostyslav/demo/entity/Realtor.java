@@ -31,6 +31,8 @@ public class Realtor {
 
     private String image;
 
+    private String phoneNumber;
+
     @ManyToOne
     private Firm firm;
 
