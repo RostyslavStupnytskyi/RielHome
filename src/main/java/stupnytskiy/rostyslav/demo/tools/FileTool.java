@@ -11,14 +11,27 @@ import java.util.UUID;
 
 @Component
 public class FileTool {
-    public static final String IMG_DIR =
-            System.getProperty("user.home") + File.separator +
-                    "dealer-images" + File.separator;//
-    public static final String USER_DIR =
-            "D:\\Server\\Zepka\\users" + File.separator;
+//    public static final String IMG_DIR =
+//            System.getProperty("user.home") + File.separator +
+//                    "dealer-images" + File.separator;//
 
-    public String saveFile(String img) throws IOException {
-        createDir(USER_DIR);//create folder if not exists
+    public static final String USER_DIR =
+            System.getProperty("user.home") + File.separator +
+                    "riel-home-images" + File.separator;
+//            "D:\\Server\\Zepka\\users" + File.separator;
+
+    public String saveRealtyImage(String img, String userDir) throws IOException {
+        final String newDir = USER_DIR + userDir + File.separator + "realty-images" + File.separator;
+        return saveFile(img,newDir);
+    }
+
+    public String saveUserAvatar(String img, String userDir) throws IOException {
+        final String newDir = USER_DIR + userDir + File.separator;
+        return saveFile(img,newDir);
+    }
+
+    private String saveFile(String img, String dir) throws IOException {
+        createDir(dir);//create folder if not exists
 
         String[] data = img.split(",");
         String metaInfo = data[0];
@@ -28,7 +41,7 @@ public class FileTool {
                 getFileExtensionFromMetaInfo(metaInfo));
 
         Files.write(
-                Paths.get(USER_DIR, fileName),
+                Paths.get(dir, fileName),
                 Base64.getDecoder().decode(base64File.getBytes())
         );
         return fileName;

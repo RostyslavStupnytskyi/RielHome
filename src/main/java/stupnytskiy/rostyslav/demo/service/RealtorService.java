@@ -103,13 +103,14 @@ public class RealtorService implements UserDetailsService {
 
     private Realtor realtorRegistrationRequestToRealtor(RealtorRegistrationRequest request) throws IOException {
         Realtor realtor = new Realtor();
+        String userDir = "user_" + request.getLogin();
         realtor.setName(request.getName());
         realtor.setLogin(request.getLogin());
         realtor.setUserRole(UserRole.ROLE_REALTOR);
         realtor.setRegion(regionService.findById(request.getRegionId()));
         realtor.setPhoneNumber(request.getPhoneNumber());
         realtor.setPassword(encoder.encode(request.getPassword()));
-        if (request.getImage() != null) realtor.setImage(fileTool.saveFile(request.getImage()));
+        if (request.getImage() != null) realtor.setImage(fileTool.saveUserAvatar(request.getImage(), userDir));
         return realtor;
     }
 }

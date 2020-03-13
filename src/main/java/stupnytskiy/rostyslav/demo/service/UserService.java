@@ -17,6 +17,7 @@ import stupnytskiy.rostyslav.demo.entity.UserRole;
 import stupnytskiy.rostyslav.demo.repository.UserRepository;
 import stupnytskiy.rostyslav.demo.security.JwtTokenTool;
 import stupnytskiy.rostyslav.demo.security.JwtUser;
+import stupnytskiy.rostyslav.demo.tools.FileTool;
 
 import java.io.IOException;
 
@@ -38,17 +39,17 @@ public class UserService implements UserDetailsService {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
+    @Autowired
+    private FileTool fileTool;
+
 
 
     public AuthenticationResponse register(UserRegistrationRequest request) throws IOException {
         if (userRepository.existsByLogin(request.getLogin())) {
             throw new BadCredentialsException("User with username " + request.getLogin() + " already exists");
         }
-        User user = new User();
-        user.setLogin(request.getLogin());
-        user.setUserRole(UserRole.ROLE_USER);
+        User user = registrationRequestToUser(request);
         user.setPassword(encoder.encode(request.getPassword()));
-        user.setUsername(request.getUsername());
         userRepository.save(user);
         return login(registrationToLogin(request));
     }
@@ -75,6 +76,19 @@ public class UserService implements UserDetailsService {
 
     public User findById(Long id)  {
         return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User with id " + id + " not exists"));
+    }
+
+    private User registrationRequestToUser(UserRegistrationRequest request) throws IOException {
+        User user = new User();
+        String userDir = "user_" + request.getLogin();
+        user.setLogin(request.getLogin());
+        user.setUsername(request.getUsername());
+        user.setUserRole(UserRole.ROLE_USER);
+        user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
+        if(request.getImage() != null)
+        user.setImage(fileTool.saveUserAvatar(request.getImage(), userDir));
+        return user;
     }
 
     private LoginRequest registrationToLogin(UserRegistrationRequest registrationRequest){

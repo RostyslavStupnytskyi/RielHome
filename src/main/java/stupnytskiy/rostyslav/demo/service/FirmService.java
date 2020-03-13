@@ -17,6 +17,7 @@ import stupnytskiy.rostyslav.demo.entity.UserRole;
 import stupnytskiy.rostyslav.demo.repository.FirmRepository;
 import stupnytskiy.rostyslav.demo.security.JwtTokenTool;
 import stupnytskiy.rostyslav.demo.security.JwtUser;
+import stupnytskiy.rostyslav.demo.tools.FileTool;
 
 import java.io.IOException;
 
@@ -38,15 +39,16 @@ public class FirmService implements UserDetailsService {
     @Autowired
     private BCryptPasswordEncoder encoder;
 
+    @Autowired
+    private FileTool fileTool;
+
 
 
     public AuthenticationResponse register(FirmRegistrationRequest request) throws IOException {
         if (firmRepository.existsByLogin(request.getLogin())) {
             throw new BadCredentialsException("Firm with login " + request.getLogin() + " already exists");
         }
-        Firm firm = new Firm();
-        firm.setLogin(request.getLogin());
-        firm.setUserRole(UserRole.ROLE_FIRM);
+        Firm firm = registrationRequestToFirm(request);
         firm.setPassword(encoder.encode(request.getPassword()));
         firmRepository.save(firm);
         return login(registrationToLogin(request));
@@ -74,6 +76,18 @@ public class FirmService implements UserDetailsService {
 
     public Firm findById(Long id)  {
         return firmRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("Firm with id " + id + " not exists"));
+    }
+
+    private Firm registrationRequestToFirm(FirmRegistrationRequest request) throws IOException {
+        Firm firm = new Firm();
+        String userDir = "user_" + request.getLogin();
+        firm.setLogin(request.getLogin());
+        firm.setUserRole(UserRole.ROLE_FIRM);
+        firm.setEmail(request.getEmail());
+        firm.setName(request.getName());
+        firm.setPhoneNumber(request.getPhoneNumber());
+        firm.setImage(fileTool.saveUserAvatar(request.getImage(), userDir));
+        return firm;
     }
 
     private LoginRequest registrationToLogin(FirmRegistrationRequest registrationRequest){

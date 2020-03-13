@@ -1,5 +1,6 @@
 package stupnytskiy.rostyslav.demo.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,12 +41,10 @@ public class RealtyRequest {
 
     @Size(max = 10)
     private List<String> images;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private LocalDate startDate;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
     private LocalDate endDate;
-
-    private Long regionId;
 
     private Long homeTypeId;
 

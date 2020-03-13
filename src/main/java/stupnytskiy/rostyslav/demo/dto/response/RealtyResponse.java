@@ -27,7 +27,6 @@ public class RealtyResponse {
     private LocalDate endDate;
     private String firmName;
     private String homeType;
-    private String regionName;
     private AddressResponse address;
 
     public RealtyResponse(Realty realty){
@@ -46,7 +45,6 @@ public class RealtyResponse {
         endDate = realty.getEndDate();
         firmName = realty.getFirm().getName();
         homeType = realty.getHomeType().getName();
-        regionName = realty.getRegion().getName();
         address = new AddressResponse(realty.getAddress());
     }
 }

@@ -5,11 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import stupnytskiy.rostyslav.demo.dto.request.PaginationRequest;
 import stupnytskiy.rostyslav.demo.dto.request.RegionRequest;
-import stupnytskiy.rostyslav.demo.dto.request.StreetTypeRequest;
 import stupnytskiy.rostyslav.demo.dto.response.PageResponse;
 import stupnytskiy.rostyslav.demo.dto.response.RegionResponse;
 import stupnytskiy.rostyslav.demo.entity.Region;
-import stupnytskiy.rostyslav.demo.entity.StreetType;
 import stupnytskiy.rostyslav.demo.repository.RegionRepository;
 
 import java.util.stream.Collectors;
@@ -21,11 +19,11 @@ public class RegionService {
     private RegionRepository regionRepository;
 
     public void save(RegionRequest request){
-        regionRepository.save(regionRequestToregion(request,null));
+        regionRepository.save(regionRequestToRegion(request,null));
     }
 
     public void update(RegionRequest request, Long id){
-        regionRepository.save(regionRequestToregion(request,findById(id)));
+        regionRepository.save(regionRequestToRegion(request,findById(id)));
     }
 
     public PageResponse<RegionResponse> findPage(PaginationRequest request){
@@ -44,7 +42,7 @@ public class RegionService {
         return regionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Region type with id " + id + " does not exist"));
     }
 
-    private Region regionRequestToregion(RegionRequest request, Region region) {
+    private Region regionRequestToRegion(RegionRequest request, Region region) {
         if (region == null) {
             region = new Region();
         }

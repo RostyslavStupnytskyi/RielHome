@@ -61,11 +61,18 @@ public class RealtyService {
         if(realty == null){
             realty = new Realty();
         }
+        String userDir;
         Realtor realtor = realtorService.findByLogin((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         realty.setName(request.getName());
         realty.setArea(request.getArea());
-        if (realtor.getFirm() == null) realty.setRealtor(realtor);
-        else realty.setFirm(realtor.getFirm());
+        if (realtor.getFirm() == null) {
+            realty.setRealtor(realtor);
+            userDir = "user_" + realtor.getLogin();
+        }
+        else {
+            realty.setFirm(realtor.getFirm());
+            userDir = "user_" + realtor.getFirm().getLogin();
+        }
         realty.setBasement(request.getBasement());
         realty.setRent(request.getRent());
         realty.setDescription(request.getDescription());
@@ -75,14 +82,14 @@ public class RealtyService {
         realty.setStage(request.getStage());
         realty.setStagesCount(request.getStagesCount());
         realty.setHomeType(homeTypeService.findById(request.getHomeTypeId()));
-        if(request.getMainImage() != null) realty.setMainImage(fileTool.saveFile(request.getMainImage()));
+        if(request.getMainImage() != null) realty.setMainImage(fileTool.saveRealtyImage(request.getMainImage(), userDir));
         if (request.getImages() != null) {
             for (String image : request.getImages()) {
-                realty.getImages().add(fileTool.saveFile(image));
+                realty.getImages().add(fileTool.saveRealtyImage(image , userDir));
             }
         }
         realty.setAddress(Address.builder()
-                .region(regionService.findById(request.getRegionId()))
+                .region(regionService.findById(request.getAddress().getRegionId()))
                 .settlement(request.getAddress().getSettlement())
                 .streetName(request.getAddress().getStreetName())
                 .streetNumber(request.getAddress().getStreetNumber())

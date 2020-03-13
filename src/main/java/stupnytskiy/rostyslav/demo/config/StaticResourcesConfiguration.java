@@ -13,7 +13,7 @@ public class StaticResourcesConfiguration implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/image/**")
+        registry.addResourceHandler("/image/**/**/**")
                 .addResourceLocations(Paths.get(USER_DIR).toUri().toString());
     }
 }
