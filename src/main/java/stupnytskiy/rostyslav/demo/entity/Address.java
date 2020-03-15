@@ -30,6 +30,9 @@ public class Address {
 
     private String streetNumber;
 
+    @ManyToOne
+    private Firm firm;
+
     @OneToOne
     private Realty realty;
 

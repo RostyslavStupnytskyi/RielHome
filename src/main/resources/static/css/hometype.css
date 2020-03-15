@@ -1,0 +1,42 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    height: 100%;
+    width: 100%;
+}
+
+#container{
+    margin: 0 auto;
+    width: 50%;
+    height: 100%;
+    padding: 10px;
+    box-shadow: 0 0 10px 1px #26a69a;
+}
+
+#page-buttons-container{
+    padding: 10px 0;
+}
+
+#name-column{
+    width: 70%;
+}
+
+.table-input{
+    height: 36px;
+    padding: 5px;
+    font-size: 1rem;
+    width: 200px;
+    color: #000000;
+}
+
+.table-input:disabled{
+    border: none;
+    background: none;
+}
+
+#modal-alert-content{
+    width: 30%;
+}

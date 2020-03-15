@@ -20,9 +20,9 @@ public class HomeType {
   @Column(nullable = false)
   private String name;
 
-  @OneToMany(mappedBy = "homeType")
+  @OneToMany(mappedBy = "homeType",cascade = CascadeType.DETACH)
   private List<Realty> realtyList;
 
-  @OneToMany(mappedBy = "homeType")
+  @OneToMany(mappedBy = "homeType",cascade = CascadeType.DETACH)
   private List<Wish> wishes;
 }

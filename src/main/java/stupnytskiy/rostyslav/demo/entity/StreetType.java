@@ -19,7 +19,7 @@ public class StreetType {
 
     private String name;
 
-    @OneToMany(mappedBy = "streetType")
+    @OneToMany(mappedBy = "streetType",cascade = CascadeType.DETACH)
     private List<Address> addresses;
 
 }

@@ -9,9 +9,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import stupnytskiy.rostyslav.demo.dto.request.AddressRequest;
 import stupnytskiy.rostyslav.demo.dto.request.FirmRegistrationRequest;
 import stupnytskiy.rostyslav.demo.dto.request.LoginRequest;
 import stupnytskiy.rostyslav.demo.dto.response.AuthenticationResponse;
+import stupnytskiy.rostyslav.demo.entity.Address;
 import stupnytskiy.rostyslav.demo.entity.Firm;
 import stupnytskiy.rostyslav.demo.entity.UserRole;
 import stupnytskiy.rostyslav.demo.repository.FirmRepository;
@@ -28,13 +30,14 @@ public class FirmService implements UserDetailsService {
     @Autowired
     private FirmRepository firmRepository;
 
-
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtTokenTool jwtTokenTool;
 
+    @Autowired
+    private AddressService addressService;
 
     @Autowired
     private BCryptPasswordEncoder encoder;
@@ -86,7 +89,8 @@ public class FirmService implements UserDetailsService {
         firm.setEmail(request.getEmail());
         firm.setName(request.getName());
         firm.setPhoneNumber(request.getPhoneNumber());
-        firm.setImage(fileTool.saveUserAvatar(request.getImage(), userDir));
+        if (request.getImage() != null ) firm.setImage(fileTool.saveUserAvatar(request.getImage(), userDir));
+        request.getAddresses().forEach(a -> firm.getAddresses().add(addressService.addressRequestToAddress(a,null)));
         return firm;
     }
 

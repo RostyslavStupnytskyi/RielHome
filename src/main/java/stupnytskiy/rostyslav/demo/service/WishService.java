@@ -8,11 +8,10 @@ import stupnytskiy.rostyslav.demo.dto.request.PaginationRequest;
 import stupnytskiy.rostyslav.demo.dto.request.WishRequest;
 import stupnytskiy.rostyslav.demo.dto.response.PageResponse;
 import stupnytskiy.rostyslav.demo.dto.response.WishResponse;
-import stupnytskiy.rostyslav.demo.entity.Region;
-import stupnytskiy.rostyslav.demo.entity.User;
-import stupnytskiy.rostyslav.demo.entity.Wish;
+import stupnytskiy.rostyslav.demo.entity.*;
 import stupnytskiy.rostyslav.demo.repository.WishRepository;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,6 +27,11 @@ public class WishService {
     @Autowired
     private RegionService regionService;
 
+    @Autowired
+    private FirmService firmService;
+
+    @Autowired
+    private RealtorService realtorService;
 //    @Autowired
 //    private StreetTypeService streetTypeService;
 
@@ -38,7 +42,7 @@ public class WishService {
         wishRepository.save(wishRequestToWish(request));
     }
 
-    public PageResponse<WishResponse> getByRegions(Set<Region> regions, PaginationRequest request){
+    public PageResponse<WishResponse> findByRegions(Set<Region> regions, PaginationRequest request) {
         final Page<Wish> page = wishRepository.findAll(request.mapToPageable());
         return new PageResponse<>(page.getContent()
                 .stream()
@@ -48,6 +52,17 @@ public class WishService {
                 page.getTotalElements(),
                 page.getTotalPages());
 
+    }
+
+    public PageResponse<WishResponse> findByFirmRegions(PaginationRequest request){
+        final Firm firm = firmService.findByLogin((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        final Set<Region> regions = firm.getAddresses().stream().map(Address::getRegion).collect(Collectors.toSet());
+        return findByRegions(regions, request);
+    }
+
+    public PageResponse<WishResponse> findByRealtorRegion(PaginationRequest request){
+        final Realtor realtor = realtorService.findByLogin((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        return findByRegions(Collections.singleton(realtor.getRegion()), request);
     }
 
     public Set<WishResponse> findAll(){

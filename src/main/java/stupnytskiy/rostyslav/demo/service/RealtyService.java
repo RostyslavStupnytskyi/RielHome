@@ -23,10 +23,7 @@ public class RealtyService {
     private RealtorService realtorService;
 
     @Autowired
-    private RegionService regionService;
-
-    @Autowired
-    private StreetTypeService streetTypeService;
+    private AddressService addressService;
 
     @Autowired
     private HomeTypeService homeTypeService;
@@ -88,14 +85,8 @@ public class RealtyService {
                 realty.getImages().add(fileTool.saveRealtyImage(image , userDir));
             }
         }
-        realty.setAddress(Address.builder()
-                .region(regionService.findById(request.getAddress().getRegionId()))
-                .settlement(request.getAddress().getSettlement())
-                .streetName(request.getAddress().getStreetName())
-                .streetNumber(request.getAddress().getStreetNumber())
-                .streetType(streetTypeService.findById(request.getAddress().getStreetTypeId()))
-                .build());
-
+        if (realty.getAddress() == null) realty.setAddress(addressService.addressRequestToAddress(request.getAddress(), null));
+        else realty.setAddress(addressService.addressRequestToAddress(request.getAddress(),realty.getAddress()));
         return realty;
     }
 }

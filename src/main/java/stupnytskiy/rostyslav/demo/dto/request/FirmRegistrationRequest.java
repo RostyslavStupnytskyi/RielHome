@@ -6,6 +6,7 @@ import lombok.Setter;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -31,5 +32,5 @@ public class FirmRegistrationRequest {
     private String image;
 
     @Size(min = 1)
-    private Set<Long> regionsId;
+    private List<AddressRequest> addresses;
 }

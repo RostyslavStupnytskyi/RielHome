@@ -39,7 +39,7 @@ public class RegionService {
     }
 
     public Region findById(Long id){
-        return regionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Region type with id " + id + " does not exist"));
+        return regionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Region with id " + id + " does not exist"));
     }
 
     private Region regionRequestToRegion(RegionRequest request, Region region) {

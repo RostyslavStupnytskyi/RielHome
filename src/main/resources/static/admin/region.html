@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Region-admin</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../css/region.css">
+    <link rel="stylesheet" href="../css/modal.css">
+    <link rel="stylesheet" href="../css/rielhome.css">
+</head>
+<body>
+
+<div id="modal-create" class="modal">
+    <div class="modal-content">
+        <div class="modal-body">
+            <input type="text" id="name-create" class="modal-inp" placeholder="Name">
+        </div>
+        <div class="modal-footer">
+            <button id="create-btn" class="btn">Save</button>
+            <button class="close-modal btn ">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-alert" class="modal">
+    <div class="modal-content" id="modal-alert-content">
+        <div class="modal-body">
+            <label class="alert-label">Are you sure you want to delete this item?</label>
+        </div>
+        <div class="modal-footer alert-footer">
+                <button id="delete-btn" class="btn">Yes</button>
+                <button class="close-modal btn ">No</button>
+        </div>
+    </div>
+</div>
+
+<div id="container">
+    REGION PAGE FOR ADMIN
+    <div>
+        <button class="btn" id="open-btn">Create</button>
+    </div>
+    <div id="page-buttons-container"> </div>
+    <div id="content-container">
+        <table style="width: 100%">
+            <thead>
+            <tr>
+                <th id="id-column">Id</th>
+                <th id="name-column">Name</th>
+                <th id="actions-column">Actions</th>
+            </tr>
+            </thead>
+            <tbody id="table-body">
+
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+<script src="../js/modal.js"></script>
+<script src="../js/region.js"></script>
+</html>

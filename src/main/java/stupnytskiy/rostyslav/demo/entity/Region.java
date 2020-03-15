@@ -19,15 +19,12 @@ public class Region {
 
     private String name;
 
-    @OneToMany(mappedBy = "region")
+    @OneToMany(mappedBy = "region",cascade = CascadeType.DETACH)
     private List<Address> addresses;
 
-    @OneToMany(mappedBy = "region")
+    @OneToMany(mappedBy = "region",cascade = CascadeType.DETACH)
     private List<Wish> wishes;
 
-    @OneToMany(mappedBy = "region")
+    @OneToMany(mappedBy = "region",cascade = CascadeType.DETACH)
     private List<Realtor> realtors;
-
-    @ManyToMany
-    private List<Firm> firms;
 }

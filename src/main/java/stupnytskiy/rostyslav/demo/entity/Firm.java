@@ -44,7 +44,7 @@ public class Firm {
     @OneToMany(mappedBy = "firm")
     private List<Realty> realtyList;
 
-    @ManyToMany(mappedBy = "firms")
-    private Set<Region> regions;
+    @OneToMany(mappedBy = "firm",cascade = CascadeType.ALL)
+    private Set<Address> addresses;
 }
 
