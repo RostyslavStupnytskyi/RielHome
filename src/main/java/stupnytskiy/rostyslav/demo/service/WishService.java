@@ -32,8 +32,8 @@ public class WishService {
 
     @Autowired
     private RealtorService realtorService;
-//    @Autowired
-//    private StreetTypeService streetTypeService;
+    @Autowired
+    private StreetTypeService streetTypeService;
 
     @Autowired
     private UserService userService;
@@ -54,16 +54,16 @@ public class WishService {
 
     }
 
-    public PageResponse<WishResponse> findByFirmRegions(PaginationRequest request){
-        final Firm firm = firmService.findByLogin((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        final Set<Region> regions = firm.getAddresses().stream().map(Address::getRegion).collect(Collectors.toSet());
-        return findByRegions(regions, request);
-    }
+//    public PageResponse<WishResponse> findByFirmRegions(PaginationRequest request){
+//        final Firm firm = firmService.findByLogin((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+//        final Set<Region> regions = firm.getAddresses().stream().map(Address::getRegion).collect(Collectors.toSet());
+//        return findByRegions(regions, request);
+//    }
 
-    public PageResponse<WishResponse> findByRealtorRegion(PaginationRequest request){
-        final Realtor realtor = realtorService.findByLogin((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-        return findByRegions(Collections.singleton(realtor.getRegion()), request);
-    }
+//    public PageResponse<WishResponse> findByRealtorRegion(PaginationRequest request){
+//        final Realtor realtor = realtorService.findByLogin((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+//        return findByRegions(Collections.singleton(realtor.getRegion()), request);
+//    }
 
     public Set<WishResponse> findAll(){
         return wishRepository.findAll()

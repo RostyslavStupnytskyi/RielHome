@@ -43,7 +43,7 @@ public class RealtyResponse {
         images = realty.getImages();
         startDate = realty.getStartDate();
         endDate = realty.getEndDate();
-        firmName = realty.getFirm().getName();
+        firmName = realty.getFirm().getUser().getUsername();
         homeType = realty.getHomeType().getName();
         address = new AddressResponse(realty.getAddress());
     }

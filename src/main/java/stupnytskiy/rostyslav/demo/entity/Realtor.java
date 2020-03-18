@@ -17,21 +17,8 @@ public class Realtor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String login;
-
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
-    private UserRole userRole;
-
-    private String image;
-
-    private String phoneNumber;
+    @OneToOne(mappedBy = "realtor")
+    private User user;
 
     @ManyToOne
     private Firm firm;

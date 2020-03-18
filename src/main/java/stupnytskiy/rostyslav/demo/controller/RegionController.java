@@ -10,6 +10,7 @@ import stupnytskiy.rostyslav.demo.service.RegionService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/region")
@@ -21,6 +22,11 @@ public class RegionController {
     @GetMapping
     public PageResponse<RegionResponse> findPage(PaginationRequest request){
         return regionService.findPage(request);
+    }
+
+    @GetMapping("/all")
+    public Set<RegionResponse> findAll(){
+        return regionService.findAll();
     }
 
     @PutMapping

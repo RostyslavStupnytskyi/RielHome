@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface RealtorRepository extends JpaRepository<Realtor,Long> {
-    Optional<Realtor> findByLogin(String login);
-    boolean existsByLogin(String login);
+//    Optional<Realtor> findByLogin(String login);
+//    boolean existsByLogin(String login);
 }

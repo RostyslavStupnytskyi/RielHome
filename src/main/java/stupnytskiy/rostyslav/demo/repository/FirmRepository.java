@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface FirmRepository extends JpaRepository<Firm,Long> {
-    Optional<Firm> findByLogin(String login);
-    boolean existsByLogin(String login);
+//    Optional<Firm> findByLogin(String login);
+//    boolean existsByLogin(String login);
 }

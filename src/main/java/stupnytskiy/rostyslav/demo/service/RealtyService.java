@@ -20,7 +20,7 @@ public class RealtyService {
     private RealtyRepository realtyRepository;
 
     @Autowired
-    private RealtorService realtorService;
+    private UserService userService;
 
     @Autowired
     private AddressService addressService;
@@ -59,16 +59,16 @@ public class RealtyService {
             realty = new Realty();
         }
         String userDir;
-        Realtor realtor = realtorService.findByLogin((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        Realtor realtor = userService.findByLogin((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getRealtor();
         realty.setName(request.getName());
         realty.setArea(request.getArea());
         if (realtor.getFirm() == null) {
             realty.setRealtor(realtor);
-            userDir = "user_" + realtor.getLogin();
+            userDir = "user_" + realtor.getUser().getLogin();
         }
         else {
             realty.setFirm(realtor.getFirm());
-            userDir = "user_" + realtor.getFirm().getLogin();
+            userDir = "user_" + realtor.getFirm().getUser().getLogin();
         }
         realty.setBasement(request.getBasement());
         realty.setRent(request.getRent());

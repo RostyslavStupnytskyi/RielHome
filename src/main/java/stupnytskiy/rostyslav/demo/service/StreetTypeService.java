@@ -10,6 +10,7 @@ import stupnytskiy.rostyslav.demo.dto.response.StreetTypeResponse;
 import stupnytskiy.rostyslav.demo.entity.StreetType;
 import stupnytskiy.rostyslav.demo.repository.StreetTypeRepository;
 
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,5 +49,9 @@ public class StreetTypeService {
         }
         streetType.setName(request.getName());
         return streetType;
+    }
+
+    public Set<StreetTypeResponse> findAll() {
+        return streetTypeRepository.findAll().stream().map(StreetTypeResponse::new).collect(Collectors.toSet());
     }
 }

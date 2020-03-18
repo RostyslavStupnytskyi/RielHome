@@ -10,6 +10,7 @@ import stupnytskiy.rostyslav.demo.dto.response.StreetTypeResponse;
 import stupnytskiy.rostyslav.demo.service.StreetTypeService;
 
 import javax.validation.Valid;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/streettype")
@@ -17,6 +18,11 @@ public class StreetTypeController {
 
     @Autowired
     private StreetTypeService streetTypeService;
+
+    @GetMapping("/all")
+    public Set<StreetTypeResponse> findPage(){
+        return streetTypeService.findAll();
+    }
 
     @GetMapping
     public PageResponse<StreetTypeResponse> findPage(PaginationRequest request){

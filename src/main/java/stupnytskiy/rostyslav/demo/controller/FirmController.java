@@ -5,9 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import stupnytskiy.rostyslav.demo.dto.request.FirmRegistrationRequest;
 import stupnytskiy.rostyslav.demo.dto.request.LoginRequest;
 import stupnytskiy.rostyslav.demo.dto.request.RealtorRegistrationRequest;
-import stupnytskiy.rostyslav.demo.dto.request.UserRegistrationRequest;
 import stupnytskiy.rostyslav.demo.dto.response.AuthenticationResponse;
-import stupnytskiy.rostyslav.demo.service.FirmService;
 import stupnytskiy.rostyslav.demo.service.RealtorService;
 import stupnytskiy.rostyslav.demo.service.UserService;
 
@@ -20,26 +18,26 @@ import java.io.IOException;
 public class FirmController {
 
     @Autowired
-    private FirmService firmService;
+    private UserService userService;
 
-    @Autowired
-    private RealtorService realtorService;
+//    @Autowired
+//    private RealtorService realtorService;
 
 
     @PostMapping("/login")
     public AuthenticationResponse login(@Valid @RequestBody LoginRequest request) {
-        return firmService.login(request);
+        return userService.login(request);
     }
 
     @PostMapping("/register")
     public AuthenticationResponse register(@Valid @RequestBody FirmRegistrationRequest request) throws IOException {
-        return firmService.register(request);
+        return userService.registerFirm(request);
     }
 
-    @PostMapping("/addRealtor")
-    public AuthenticationResponse addRealtor(@Valid @RequestBody RealtorRegistrationRequest request) throws  IOException {
-        return  realtorService.registerByFirm(request);
-    }
+//    @PostMapping("/addRealtor")
+//    public AuthenticationResponse addRealtor(@Valid @RequestBody RealtorRegistrationRequest request) throws  IOException {
+//        return  realtorService.registerByFirm(request);
+//    }
 
     @GetMapping("/checkToken")
     public void checkToken() {

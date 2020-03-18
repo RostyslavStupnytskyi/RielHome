@@ -26,7 +26,7 @@ public class UserController {
 
     @PostMapping("/register")
     public AuthenticationResponse register(@Valid @RequestBody UserRegistrationRequest request) throws IOException {
-        return userService.register(request);
+        return userService.registerUser(request);
     }
 
     @GetMapping("/checkToken")

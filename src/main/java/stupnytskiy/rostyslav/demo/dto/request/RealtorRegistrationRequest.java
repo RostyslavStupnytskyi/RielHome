@@ -1,5 +1,6 @@
 package stupnytskiy.rostyslav.demo.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,22 +12,9 @@ import java.util.Set;
 @Getter
 @Setter
 public class RealtorRegistrationRequest {
-    @NotBlank
-    @NotNull
-    private String login;
 
-    @Size(min = 3, max = 30)
-    private String password;
-
-    @NotBlank
-    @NotNull
-    private String name;
-
-    @NotBlank
-    @NotNull
-    private String phoneNumber;
-
-    private String image;
+    @JsonProperty("user")
+    private UserRegistrationRequest userRegistrationRequest;
 
     private Long regionId;
 }

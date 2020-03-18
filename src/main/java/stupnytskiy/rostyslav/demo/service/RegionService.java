@@ -10,6 +10,8 @@ import stupnytskiy.rostyslav.demo.dto.response.RegionResponse;
 import stupnytskiy.rostyslav.demo.entity.Region;
 import stupnytskiy.rostyslav.demo.repository.RegionRepository;
 
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,5 +50,9 @@ public class RegionService {
         }
         region.setName(request.getName());
         return region;
+    }
+
+    public Set<RegionResponse> findAll() {
+        return regionRepository.findAll().stream().map(RegionResponse::new).collect(Collectors.toSet());
     }
 }

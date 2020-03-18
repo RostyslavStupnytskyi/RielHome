@@ -35,6 +35,12 @@ public class User {
 
     private String image;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    private Firm firm;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Realtor realtor;
+
     @OneToMany(mappedBy = "user")
     private List<Wish> wishes;
 

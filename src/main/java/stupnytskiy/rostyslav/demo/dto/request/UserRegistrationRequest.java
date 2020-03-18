@@ -19,7 +19,7 @@ public class UserRegistrationRequest {
 
     @NotBlank
     @NotNull
-    private String username;
+    private String name;
 
     @NotBlank
     @NotNull

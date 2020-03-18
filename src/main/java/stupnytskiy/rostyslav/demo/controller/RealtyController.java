@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import stupnytskiy.rostyslav.demo.dto.request.RealtyRequest;
 import stupnytskiy.rostyslav.demo.dto.response.RealtyResponse;
-import stupnytskiy.rostyslav.demo.service.RealtorService;
+//import stupnytskiy.rostyslav.demo.service.RealtorService;
 import stupnytskiy.rostyslav.demo.service.RealtyService;
 
 import java.io.IOException;

@@ -4,9 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import stupnytskiy.rostyslav.demo.dto.request.LoginRequest;
 import stupnytskiy.rostyslav.demo.dto.request.RealtorRegistrationRequest;
-import stupnytskiy.rostyslav.demo.dto.request.UserRegistrationRequest;
 import stupnytskiy.rostyslav.demo.dto.response.AuthenticationResponse;
-import stupnytskiy.rostyslav.demo.service.RealtorService;
+import stupnytskiy.rostyslav.demo.service.UserService;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -17,17 +16,17 @@ import java.io.IOException;
 public class RealtorController {
 
     @Autowired
-    private RealtorService realtorService;
+    private UserService userService;
 
 
     @PostMapping("/login")
     public AuthenticationResponse login(@Valid @RequestBody LoginRequest request) {
-        return realtorService.login(request);
+        return userService.login(request);
     }
 
     @PostMapping("/register")
     public AuthenticationResponse register(@Valid @RequestBody RealtorRegistrationRequest request) throws IOException {
-        return realtorService.registerSimple(request);
+        return userService.registerRealtor(request);
     }
 
     @GetMapping("/checkToken")
