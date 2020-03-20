@@ -1,19 +1,20 @@
 package stupnytskiy.rostyslav.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import stupnytskiy.rostyslav.demo.dto.request.FirmRegistrationRequest;
-import stupnytskiy.rostyslav.demo.dto.request.LoginRequest;
-import stupnytskiy.rostyslav.demo.dto.request.RealtorRegistrationRequest;
-import stupnytskiy.rostyslav.demo.dto.request.UserRegistrationRequest;
+import stupnytskiy.rostyslav.demo.dto.request.*;
 import stupnytskiy.rostyslav.demo.dto.response.AuthenticationResponse;
+import stupnytskiy.rostyslav.demo.dto.response.FirmProfileResponse;
+import stupnytskiy.rostyslav.demo.dto.response.UserResponse;
 import stupnytskiy.rostyslav.demo.entity.Firm;
 import stupnytskiy.rostyslav.demo.entity.Realtor;
 import stupnytskiy.rostyslav.demo.entity.User;
@@ -56,17 +57,15 @@ public class UserService implements UserDetailsService {
     public AuthenticationResponse registerUser(UserRegistrationRequest request) throws IOException {
         User user = register(request);
         userRepository.save(user);
+        saveUserAvatar(request);
         return login(registrationToLogin(request));
     }
 
     public AuthenticationResponse registerFirm(FirmRegistrationRequest request) throws IOException {
         User user = register(request.getUserRegistrationRequest());
-        user.setFirm(Firm.builder()
-        .addresses(
-                request.getAddresses().stream().map(a -> addressService.addressRequestToAddress(a,null)).collect(Collectors.toSet())
-        ).build()
-        );
+        user.setFirm(new Firm());
         userRepository.save(user);
+        saveUserAvatar(request.getUserRegistrationRequest());
         return login(registrationToLogin(request.getUserRegistrationRequest()));
     }
 
@@ -75,17 +74,26 @@ public class UserService implements UserDetailsService {
         user.setRealtor(Realtor.builder().region(regionService.findById(request.getRegionId())).build());
         user.setLogin(request.getUserRegistrationRequest().getLogin());
         userRepository.save(user);
+        saveUserAvatar(request.getUserRegistrationRequest());
         return login(registrationToLogin(request.getUserRegistrationRequest()));
     }
 
 
-    public User register(UserRegistrationRequest request) throws IOException {
+    public User register(UserRegistrationRequest request) {
         if (userRepository.existsByLogin(request.getLogin())) {
             throw new BadCredentialsException("User with username " + request.getLogin() + " already exists");
         }
         User user = registrationRequestToUser(request);
         user.setPassword(encoder.encode(request.getPassword()));
         return user;
+    }
+
+    private void saveUserAvatar(UserRegistrationRequest request) throws IOException {
+        User user = findByLogin(request.getLogin());
+        String userDir = "user_" + user.getId();
+        if (request.getImage() != null)
+            user.setImage(fileTool.saveUserAvatar(request.getImage(), userDir));
+        userRepository.save(user);
     }
 
     public AuthenticationResponse login(LoginRequest request) {
@@ -103,6 +111,7 @@ public class UserService implements UserDetailsService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(login, request.getPassword()));
     }
 
+
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         User user = findByLogin(login);
@@ -117,16 +126,13 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException("User with id " + id + " not exists"));
     }
 
-    private User registrationRequestToUser(UserRegistrationRequest request) throws IOException {
+    private User registrationRequestToUser(UserRegistrationRequest request) {
         User user = new User();
-        String userDir = "user_" + request.getLogin();
         user.setLogin(request.getLogin());
         user.setUsername(request.getName());
         user.setUserRole(UserRole.ROLE_USER);
         user.setEmail(request.getEmail());
         user.setPhoneNumber(request.getPhoneNumber());
-        if (request.getImage() != null)
-            user.setImage(fileTool.saveUserAvatar(request.getImage(), userDir));
         return user;
     }
 
@@ -137,4 +143,13 @@ public class UserService implements UserDetailsService {
         return loginRequest;
     }
 
+    public FirmProfileResponse getFirmProfile() {
+        String login = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new FirmProfileResponse(findByLogin(login));
+    }
+
+    public UserResponse getProfile() {
+        String login = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new UserResponse(findByLogin(login));
+    }
 }

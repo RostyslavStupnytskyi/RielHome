@@ -15,16 +15,20 @@ public class AddressResponse {
 
     private Long id;
     private String regionName;
+    private Long regionId;
     private String settlement;
     private String streetType;
+    private Long streetTypeId;
     private String streetName;
     private String streetNumber;
 
     public AddressResponse(Address address){
         id = address.getId();
         regionName  = address.getRegion().getName();
+        regionId = address.getRegion().getId();
         settlement = address.getSettlement();
         streetType = address.getStreetType().getName();
+        streetTypeId = address.getStreetType().getId();
         streetName = address.getStreetName();
         streetNumber = address.getStreetNumber();
     }

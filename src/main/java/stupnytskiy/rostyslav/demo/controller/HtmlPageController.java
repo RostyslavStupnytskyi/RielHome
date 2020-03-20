@@ -23,4 +23,19 @@ public class HtmlPageController {
     public String streetType(){
         return "streettype.html";
     }
+
+    @RequestMapping("/registration-page")
+    public String registrationPage(){
+        return "user/registration.html";
+    }
+
+    @RequestMapping("/sign-in")
+    public String loginPage(){
+        return "user/login.html";
+    }
+
+    @RequestMapping("/firm-profile")
+    public String firmProfile(){
+        return "user/firm-profile.html";
+    }
 }

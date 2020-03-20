@@ -64,11 +64,11 @@ public class RealtyService {
         realty.setArea(request.getArea());
         if (realtor.getFirm() == null) {
             realty.setRealtor(realtor);
-            userDir = "user_" + realtor.getUser().getLogin();
+            userDir = "user_" + realtor.getUser().getId();
         }
         else {
             realty.setFirm(realtor.getFirm());
-            userDir = "user_" + realtor.getFirm().getUser().getLogin();
+            userDir = "user_" + realtor.getFirm().getUser().getId();
         }
         realty.setBasement(request.getBasement());
         realty.setRent(request.getRent());

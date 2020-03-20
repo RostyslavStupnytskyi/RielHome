@@ -7,11 +7,11 @@ const $phoneInput = $('#phone-input');
 const $passwordInput = $('#password-input');
 const $emailInput = $('#email-input');
 const $nameInput = $('#name-input');
-const $settlementInput = $('#settlement-input');
-const $streetNameInput = $('#street-name-input');
-const $streetNumberInput = $('#street-number-input');
-const $firmRegionSelect = $('#firm-region-select');
-const $firmStreetTypeSelect = $('#firm-street-type-select');
+// const $settlementInput = $('#settlement-input');
+// const $streetNameInput = $('#street-name-input');
+// const $streetNumberInput = $('#street-number-input');
+// const $firmRegionSelect = $('#firm-region-select');
+// const $firmStreetTypeSelect = $('#firm-street-type-select');
 
 function appendStreetTypesToSelect(streettypes) {
     for (let street of streettypes){
@@ -58,21 +58,17 @@ $registrationBtn.click(() => {
 function registerFirm(user) {
     let request = {
         user: user,
-        addresses: [{
-            settlement : $settlementInput.val(),
-            streetName: $streetNameInput.val(),
-            streetNumber: $streetNumberInput.val(),
-            streetTypeId: $firmStreetTypeSelect.val(),
-            regionId: $firmRegionSelect.val()
-        }]
-    }
+    };
     $.ajax({
         url: `${API_URL}/firm/register`,
         type: 'post',
         contentType: 'application/json',
         data: JSON.stringify(request),
         success: function(response) {
-            alert('ok')
+            window.localStorage.setItem('user_id', response.id);
+            window.localStorage.setItem('user_name', response.username);
+            window.localStorage.setItem('user_token', response.token);
+            window.location.href = `${API_URL}/firm-profile`
         },
         error: function(xhr, status, error){
             let errorMessage = xhr.status + ': ' + xhr.statusText
@@ -89,6 +85,9 @@ function registerUser(request) {
         data: JSON.stringify(request),
         success: function(response) {
             alert('ok')
+            window.localStorage.setItem('user_id', response.id);
+            window.localStorage.setItem('user_name', response.username);
+            window.localStorage.setItem('user_token', response.token);
         },
         error: function(xhr, status, error){
             let errorMessage = xhr.status + ': ' + xhr.statusText;

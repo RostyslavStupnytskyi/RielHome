@@ -20,15 +20,6 @@ public class FirmController {
     @Autowired
     private UserService userService;
 
-//    @Autowired
-//    private RealtorService realtorService;
-
-
-    @PostMapping("/login")
-    public AuthenticationResponse login(@Valid @RequestBody LoginRequest request) {
-        return userService.login(request);
-    }
-
     @PostMapping("/register")
     public AuthenticationResponse register(@Valid @RequestBody FirmRegistrationRequest request) throws IOException {
         return userService.registerFirm(request);

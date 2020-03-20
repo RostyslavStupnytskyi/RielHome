@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Firm profile</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../css/rielhome.css">
+    <link rel="stylesheet" href="../css/modal.css">
+    <link rel="stylesheet" href="../css/firm-profile.css">
+</head>
+<body>
+<div id="container">
+    <div class="space"></div>
+    <div id="main-container">
+        <div id="firm-avatar-container">
+            <input type="text" style="display: none" id="firm-id-input">
+        </div>
+        <div id="firm-info-container">
+            <div>
+                <!--                <label class="firm-info-label" for="firm-name-input">Name</label>-->
+                <input type="text" id="firm-name-input" class="firm-info-input" disabled></div>
+            <div>
+                <!--                <label class="firm-info-label" for="firm-phone-input">Phone</label>-->
+                <input type="tel"
+                       id="firm-phone-input"
+                       class="firm-info-input"
+                       disabled></div>
+            <div>
+                <!--                <label class="firm-info-label" for="firm-email-input">Email</label>-->
+                <input type="text"
+                       id="firm-email-input"
+                       class="firm-info-input"
+                       disabled></div>
+        </div>
+        <div id="actions-container">
+            <div id="realtors-count-container"></div>
+            <div id="realties-count-container"></div>
+            <div class="action-container">
+                <button class="btn action-btn" style="font-size: 30px" id="edit-profile-btn">Edit profile</button>
+            </div>
+            <div class="action-container">
+                <button class="btn action-btn" style="font-size: 30px" id="change-avatar-btn">Change avatar</button>
+            </div>
+            <div class="action-container">
+                <button class="btn action-btn add-realtor-btn" style="font-size: 30px">Add realtor</button>
+            </div>
+            <div class="action-container">
+                <button class="btn action-btn add-publication-btn" style="font-size: 30px">Add publication</button>
+            </div>
+        </div>
+    </div>
+    <div id="content-container">
+        <div class="column">
+            <div id="realtors-container" class="column-element">
+                <div class="column-element-header">
+                    <button id="realtors-btn" class="column-header-btn">Realtors</button>
+                    <button class="add-realtor-btn column-header-btn">Add realtor</button>
+                </div>
+                <div id="realtors-container-content">
+                </div>
+            </div>
+            <div class="break"></div>
+            <div id="addresses-container" class="column-element">
+                <div class="column-element-header">
+                    <button id="addresses-btn" class="column-header-btn">Addresses</button>
+                    <button id="add-address-btn" class="column-header-btn">Add address</button>
+                </div>
+                <div id="addresses-container-content">
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div id="publications-container" class="column-element">
+                <div class="column-element-header">
+                    <button class="column-header-btn">Publications</button>
+                    <button class="add-publication-btn column-header-btn">Add publication</button>
+                </div>
+                <div id="publications-container-content">
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div id="answers-container" class="column-element">
+                <div class="column-element-header">
+                    <button id="wishes-btn" class="column-header-btn">Wishes</button>
+                </div>
+                <div id="answers-container-content">
+                </div>
+            </div>
+            <div class="break"></div>
+            <div id="wishes-container" class="column-element">
+                <div class="column-element-header">
+                    <button id="answers-btn" class="column-header-btn">Answers</button>
+                </div>
+                <div id="wishes-container-content">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="address-modal" class="modal">
+    <div class="modal-content" id="address-modal-content">
+        <div class="modal-header">ADDRESS</div>
+        <div class="modal-body">
+            <div>
+                <select id="address-region-select" class="modal-select">
+                    <option value="0" disabled selected>Region</option>
+                </select>
+            </div>
+            <div><input type="text" id="address-settlement-input" class="modal-inp" placeholder="Settlement">
+                <input type="text" id="address-modal-id-input" class="modal-inp" style="display:none;"></div>
+            <div>
+                <select id="address-street-type-select" class="modal-select">
+                    <option value="0" selected disabled>Street Type</option>
+                </select>
+            </div>
+            <div><input type="text" id="address-street-name-input" class="modal-inp" placeholder="Street name"></div>
+            <div><input type="text" id="address-street-number-input" class="modal-inp" placeholder="Street number">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button id="save-address-btn" class="btn">Save</button>
+            <button class="close-modal btn ">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="address-delete-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-body" id="delete-modal-body">
+            <div><label>Are you sure?</label></div>
+            <input type="text" id="address-delete-modal-id" style="display: none">
+            <div class="modal-footer">
+                <button id="address-delete-modal-btn" class="btn">Yes,delete</button>
+                <button class="close-modal btn ">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="../js/firm-profile.js"></script>
+<script src="../js/modal.js"></script>
+</html>
