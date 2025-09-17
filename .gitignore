@@ -1,0 +1,13 @@
+.gradle/
+build/
+**/build/
+**/out/
+target/
+**/target/
+.idea/
+*.iml
+*.log
+.DS_Store
+.env
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/apache-maven-*-bin.zip
