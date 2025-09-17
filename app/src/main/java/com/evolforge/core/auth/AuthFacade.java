@@ -3,8 +3,10 @@ package com.evolforge.core.auth;
 import com.evolforge.core.auth.domain.UserAccount;
 import com.evolforge.core.auth.service.AuthService;
 import com.evolforge.core.auth.service.dto.ClientMetadata;
+import com.evolforge.core.auth.service.dto.CurrentUserResult;
 import com.evolforge.core.auth.service.dto.EmailVerificationResult;
 import com.evolforge.core.auth.service.dto.GoogleAccountResult;
+import com.evolforge.core.auth.service.dto.MembershipDescriptor;
 import com.evolforge.core.auth.service.dto.RegistrationResult;
 import com.evolforge.core.auth.service.dto.TokenPair;
 import com.evolforge.core.igoauth.GoogleProfile;
@@ -40,6 +42,16 @@ public class AuthFacade {
         return authService.refresh(refreshToken, metadata);
     }
 
+    public void logout(String refreshToken) {
+        authService.logout(refreshToken);
+    }
+
+    public CurrentUser currentUser(String accessToken) {
+        CurrentUserResult result = authService.currentUser(accessToken);
+        UserAccount user = result.user();
+        return new CurrentUser(user.getId(), user.getEmail(), user.getDisplayName(), result.memberships());
+    }
+
     public void resendVerificationEmail(String email) {
         authService.resendVerificationEmail(email);
     }
@@ -66,5 +78,9 @@ public class AuthFacade {
     }
 
     public record RegistrationResponse(java.util.UUID userId, java.util.UUID tenantId) {
+    }
+
+    public record CurrentUser(java.util.UUID id, String email, String displayName,
+            java.util.List<MembershipDescriptor> memberships) {
     }
 }

@@ -11,6 +11,7 @@ import com.evolforge.core.auth.repository.PasswordResetTokenRepository;
 import com.evolforge.core.auth.repository.RefreshTokenRepository;
 import com.evolforge.core.auth.repository.UserAccountRepository;
 import com.evolforge.core.auth.service.dto.ClientMetadata;
+import com.evolforge.core.auth.service.dto.CurrentUserResult;
 import com.evolforge.core.auth.service.dto.EmailVerificationResult;
 import com.evolforge.core.auth.service.dto.GoogleAccountResult;
 import com.evolforge.core.auth.service.dto.MembershipDescriptor;
@@ -132,6 +133,32 @@ public class AuthService {
     @Transactional
     public void revokeRefreshTokensForUser(UserAccount user) {
         refreshTokenRepository.deleteByUserId(user.getId());
+    }
+
+    @Transactional
+    public void logout(String refreshToken) {
+        if (!StringUtils.hasText(refreshToken)) {
+            return;
+        }
+        refreshTokenRepository.findByToken(refreshToken).ifPresent(token -> {
+            token.setRevoked(true);
+            refreshTokenRepository.save(token);
+        });
+    }
+
+    @Transactional(readOnly = true)
+    public CurrentUserResult currentUser(String accessToken) {
+        JwtService.AccessTokenDetails details = jwtService.parse(accessToken);
+        UserAccount user = userAccountRepository.findById(details.userId())
+                .orElseThrow(() -> AuthException.unauthorized(
+                        "auth.access_invalid", "Access token is invalid or expired"));
+
+        if (user.isDisabled()) {
+            throw AuthException.forbidden("auth.account_disabled", "Account has been disabled");
+        }
+
+        List<MembershipDescriptor> memberships = membershipLookup.membershipsForUser(user.getId());
+        return new CurrentUserResult(user, memberships);
     }
 
     @Transactional

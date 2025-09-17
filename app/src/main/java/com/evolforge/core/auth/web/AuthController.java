@@ -1,7 +1,9 @@
 package com.evolforge.core.auth.web;
 
 import com.evolforge.core.auth.AuthFacade;
+import com.evolforge.core.auth.AuthFacade.CurrentUser;
 import com.evolforge.core.auth.AuthFacade.RegistrationResponse;
+import com.evolforge.core.auth.exception.AuthException;
 import com.evolforge.core.auth.service.dto.ClientMetadata;
 import com.evolforge.core.auth.service.dto.TokenPair;
 import com.evolforge.core.igoauth.GoogleOAuthResult;
@@ -14,6 +16,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.time.Instant;
 import java.util.List;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.util.StringUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -60,6 +64,13 @@ public class AuthController {
     public Mono<TokenResponse> refresh(@Valid @RequestBody RefreshRequest request, ServerWebExchange exchange) {
         return Mono.fromCallable(() -> authFacade.refresh(request.refreshToken(), extractMetadata(exchange)))
                 .map(AuthController::toTokenResponse)
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    @PostMapping(path = "/logout", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Mono<ResponseEntity<Void>> logout(@Valid @RequestBody LogoutRequest request) {
+        return Mono.fromRunnable(() -> authFacade.logout(request.refreshToken()))
+                .thenReturn(ResponseEntity.noContent().build())
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
@@ -110,6 +121,13 @@ public class AuthController {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
+    @GetMapping(path = "/me")
+    public Mono<CurrentUserResponse> currentUser(ServerWebExchange exchange) {
+        return Mono.fromCallable(() -> authFacade.currentUser(extractAccessToken(exchange)))
+                .map(AuthController::toCurrentUserResponse)
+                .subscribeOn(Schedulers.boundedElastic());
+    }
+
     private static TokenResponse toTokenResponse(TokenPair pair) {
         long expiresIn = Math.max(0, pair.accessTokenExpiresAt().getEpochSecond() - Instant.now().getEpochSecond());
         return new TokenResponse(pair.accessToken(), pair.refreshToken(), expiresIn);
@@ -135,6 +153,14 @@ public class AuthController {
         return new ClientMetadata(ipAddress, userAgent);
     }
 
+    private String extractAccessToken(ServerWebExchange exchange) {
+        String authorization = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        if (!StringUtils.hasText(authorization) || !authorization.startsWith("Bearer ")) {
+            throw AuthException.unauthorized("auth.access_invalid", "Access token is invalid or expired");
+        }
+        return authorization.substring(7);
+    }
+
     public record RegisterRequest(
             @Email @NotBlank String email,
             @NotBlank @Size(min = 8, max = 72) String password,
@@ -145,6 +171,9 @@ public class AuthController {
     }
 
     public record RefreshRequest(@NotBlank String refreshToken) {
+    }
+
+    public record LogoutRequest(@NotBlank String refreshToken) {
     }
 
     public record ResendVerificationRequest(@Email @NotBlank String email) {
@@ -160,5 +189,25 @@ public class AuthController {
     }
 
     public record TokenResponse(String accessToken, String refreshToken, long expiresIn) {
+    }
+
+    public record CurrentUserResponse(
+            java.util.UUID id,
+            String email,
+            String displayName,
+            java.util.List<MembershipResponse> memberships) {
+    }
+
+    public record MembershipResponse(java.util.UUID tenantId, String role) {
+    }
+
+    private static CurrentUserResponse toCurrentUserResponse(CurrentUser currentUser) {
+        return new CurrentUserResponse(
+                currentUser.id(),
+                currentUser.email(),
+                currentUser.displayName(),
+                currentUser.memberships().stream()
+                        .map(membership -> new MembershipResponse(membership.tenantId(), membership.role()))
+                        .toList());
     }
 }
