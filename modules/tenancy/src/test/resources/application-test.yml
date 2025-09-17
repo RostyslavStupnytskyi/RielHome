@@ -1,0 +1,17 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+logging:
+  level:
+    root: WARN
+app:
+  auth:
+    jwt:
+      secret: test-secret-value-change-me-1234567890-test-secret-value-change-me
+      issuer: test-issuer
