@@ -160,6 +160,23 @@ class AuthControllerTest {
     }
 
     @Test
+    void logoutRevokesRefreshToken() {
+        registerAndVerify("logout@example.com");
+
+        TokenResponse login = login("logout@example.com", "Sup3rSecure!");
+
+        webTestClient.post()
+                .uri("/api/auth/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(Map.of("refreshToken", login.refreshToken()))
+                .exchange()
+                .expectStatus().isNoContent();
+
+        RefreshToken token = refreshTokenRepository.findByToken(login.refreshToken()).orElseThrow();
+        assertThat(token.isRevoked()).isTrue();
+    }
+
+    @Test
     void resendVerificationCreatesNewToken() {
         register("resend@example.com", "Sup3rSecure!", "Owner");
         assertThat(emailSender.verificationLinks).hasSize(1);
@@ -217,6 +234,24 @@ class AuthControllerTest {
         RefreshToken storedToken = refreshTokenRepository.findAll().get(0);
         assertThat(storedToken.getToken()).isEqualTo(newLogin.refreshToken());
         assertThat(storedToken.getCreatedAt()).isBeforeOrEqualsTo(Instant.now());
+    }
+
+    @Test
+    void currentUserReturnsProfileWithMemberships() {
+        registerAndVerify("me@example.com");
+        TokenResponse login = login("me@example.com", "Sup3rSecure!");
+
+        webTestClient.get()
+                .uri("/api/auth/me")
+                .header("Authorization", "Bearer " + login.accessToken())
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.email").isEqualTo("me@example.com")
+                .jsonPath("$.displayName").isEqualTo("Owner")
+                .jsonPath("$.memberships").isArray()
+                .jsonPath("$.memberships[0].role").isEqualTo("OWNER")
+                .jsonPath("$.memberships[0].tenantId").isNotEmpty();
     }
 
     private RegistrationResponse register(String email, String password, String displayName) {
