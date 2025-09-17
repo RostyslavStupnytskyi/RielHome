@@ -13,4 +13,6 @@ public interface MembershipRepository extends BaseRepository<Membership> {
     List<Membership> findByTenantId(UUID tenantId);
 
     Optional<Membership> findByUserIdAndTenantId(UUID userId, UUID tenantId);
+
+    long deleteByTenantIdAndUserId(UUID tenantId, UUID userId);
 }
