@@ -31,13 +31,16 @@ public class JwtService {
     private final AuthProperties properties;
     private final ObjectMapper objectMapper;
     private final TokenGenerator tokenGenerator;
+    private final RevokedTokenStore revokedTokenStore;
 
     private byte[] secretKey;
 
-    public JwtService(AuthProperties properties, ObjectMapper objectMapper, TokenGenerator tokenGenerator) {
+    public JwtService(AuthProperties properties, ObjectMapper objectMapper, TokenGenerator tokenGenerator,
+            RevokedTokenStore revokedTokenStore) {
         this.properties = properties;
         this.objectMapper = objectMapper;
         this.tokenGenerator = tokenGenerator;
+        this.revokedTokenStore = revokedTokenStore;
     }
 
     @PostConstruct
@@ -92,6 +95,11 @@ public class JwtService {
 
         Map<String, Object> payload = readJson(base64UrlDecode(parts[1]));
 
+        String issuer = Objects.toString(payload.get("iss"), null);
+        if (!StringUtils.hasText(issuer) || !Objects.equals(issuer, properties.getJwt().getIssuer())) {
+            throw AuthException.unauthorized("auth.access_invalid", "Access token is invalid or expired");
+        }
+
         String subject = Objects.toString(payload.get("sub"), null);
         if (!StringUtils.hasText(subject)) {
             throw AuthException.unauthorized("auth.access_invalid", "Access token is invalid or expired");
@@ -113,11 +121,23 @@ public class JwtService {
             throw AuthException.unauthorized("auth.access_invalid", "Access token is invalid or expired");
         }
 
+        Object tokenIdValue = payload.get("jti");
+        if (!(tokenIdValue instanceof String tokenId) || !StringUtils.hasText(tokenId)) {
+            throw AuthException.unauthorized("auth.access_invalid", "Access token is invalid or expired");
+        }
+        if (revokedTokenStore.isRevoked(tokenId)) {
+            throw AuthException.unauthorized("auth.access_invalid", "Access token is invalid or expired");
+        }
+
         List<MembershipDescriptor> memberships = extractMemberships(payload.get("tenants"));
         String email = Objects.toString(payload.get("email"), null);
         String displayName = Objects.toString(payload.get("name"), null);
 
-        return new AccessTokenDetails(userId, email, displayName, expiresAt, memberships);
+        return new AccessTokenDetails(userId, email, displayName, expiresAt, memberships, tokenId);
+    }
+
+    public void revoke(String tokenId, Instant expiresAt) {
+        revokedTokenStore.revoke(tokenId, expiresAt);
     }
 
     private String toJson(Map<String, Object> value) {
@@ -185,6 +205,6 @@ public class JwtService {
     }
 
     public record AccessTokenDetails(UUID userId, String email, String displayName, Instant expiresAt,
-            List<MembershipDescriptor> memberships) {
+            List<MembershipDescriptor> memberships, String tokenId) {
     }
 }
