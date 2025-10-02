@@ -1,20 +1,10 @@
 # RielHome Automation Platform
 
-RielHome is a modular Spring Boot 3 service that orchestrates Instagram business messaging, live chat, and tenant-aware automation flows. The platform is implemented as a modular monolith backed by PostgreSQL 15 with Flyway migrations and extensive auditing.
+RielHome is a Spring Boot 3 service that orchestrates Instagram business messaging, live chat, and tenant-aware automation flows. The platform is implemented as a cohesive application backed by PostgreSQL 17 with Flyway migrations and extensive auditing.
 
 ## Project structure
 
-The Maven build is composed of a Boot application module and a family of domain-focused libraries:
-
-| Module | Purpose |
-| ------ | ------- |
-| `app` | Spring Boot WebFlux application with security, persistence, and Flyway bootstrap. |
-| `modules/infra` | Shared infrastructure pieces such as the audited JPA base entity and repository abstractions. |
-| `modules/auth` | Core authentication aggregates (users, refresh tokens, email verification, password reset). |
-| `modules/tenancy` | Multi-tenant ownership model with organizations and memberships. |
-| Remaining modules | Placeholders for email delivery, Instagram integration, webhooks, flows, engine, scheduler, live chat, and analytics. |
-
-Each module is published as a regular Maven `jar` and consumed by the `app` module, enabling explicit dependency wiring between bounded contexts.
+The Maven build is now a single Spring Boot module rooted at the top-level `src` directory. Packages remain grouped by domain (auth, tenancy, infra, etc.), but they are compiled together which simplifies dependency management and IDE navigation.
 
 ## Getting started
 
@@ -26,14 +16,15 @@ Each module is published as a regular Maven `jar` and consumed by the `app` modu
 ### Useful commands
 
 ```bash
-./mvnw clean verify          # compile modules and execute unit/integration tests
+./mvnw clean verify          # compile the application and execute unit/integration tests
 ./mvnw spring-boot:run       # start the reactive HTTP server on port 8080
+docker compose up -d         # start the local PostgreSQL 17 database
 ```
 
 The Maven wrapper downloads its supporting JAR and Maven 3.9.9 distribution from Maven Central on first use, keeping binary
 artifacts out of version control.
 
-During test execution a PostgreSQL 15 container is launched automatically. Migrations located under `app/src/main/resources/db/migration` are applied via Flyway before repositories interact with the schema.
+During test execution a PostgreSQL 17 container is launched automatically. Migrations located under `src/main/resources/db/migration` are applied via Flyway before repositories interact with the schema.
 
 ### Configuration
 
@@ -61,7 +52,7 @@ All authentication endpoints emit structured errors following the `{ code, messa
 
 ## Testing and quality
 
-Testcontainers-backed integration tests cover the full auth lifecycle (register → verify → login → refresh → resend → reset) via `AuthControllerTest`, while the original JPA slice test continues validating audited persistence wiring. All tests run against PostgreSQL 15 inside Docker to mirror production characteristics.
+Testcontainers-backed integration tests cover the full auth lifecycle (register → verify → login → refresh → resend → reset) via `AuthControllerTest`, while the original JPA slice test continues validating audited persistence wiring. All tests run against PostgreSQL 17 inside Docker to mirror production characteristics.
 
 CI/CD and additional checks will be added in subsequent milestones as the feature set grows.
 
