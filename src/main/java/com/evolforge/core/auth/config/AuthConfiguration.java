@@ -18,6 +18,6 @@ public class AuthConfiguration {
             return new BCryptPasswordEncoder();
         }
         // Default to Argon2id with balanced settings for general-purpose hosts.
-        return new Argon2PasswordEncoder();
+        return new Argon2PasswordEncoder(16, 32, 1, 1 << 12, 3);
     }
 }
