@@ -1,12 +1,12 @@
 services:
   postgres:
     image: postgres:17
-    container_name: rielhome-postgres
+    container_name: evolforge-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: rielhome
-      POSTGRES_USER: rielhome
-      POSTGRES_PASSWORD: rielhome
+      POSTGRES_DB: postgres
+      POSTGRES_USER: evolforge
+      POSTGRES_PASSWORD: evolforge
     ports:
       - "5432:5432"
     volumes:

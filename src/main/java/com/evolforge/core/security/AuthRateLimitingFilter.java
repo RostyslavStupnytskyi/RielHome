@@ -1,9 +1,9 @@
 package com.evolforge.core.security;
 
-import com.bucket4j.Bandwidth;
-import com.bucket4j.Bucket;
-import com.bucket4j.Bucket4j;
-import com.bucket4j.Refill;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Bucket4j;
+import io.github.bucket4j.Refill;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
