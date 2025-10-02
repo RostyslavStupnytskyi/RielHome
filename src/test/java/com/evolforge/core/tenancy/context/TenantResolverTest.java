@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -98,12 +97,16 @@ class TenantResolverTest {
                 AuthorityUtils.createAuthorityList("ROLE_USER"));
     }
 
-    private ServerWebExchange withRequest(ServerHttpRequest request) {
-        MockServerWebExchange exchange = MockServerWebExchange.from(request);
-        return exchange;
+    private ServerWebExchange withRequest(MockServerHttpRequest request) {
+        return MockServerWebExchange.from(request);
     }
 
     private record TestPrincipal(String name, List<MembershipDescriptor> memberships)
             implements Principal, TenantAwarePrincipal {
+
+        @Override
+        public String getName() {
+            return name;
+        }
     }
 }

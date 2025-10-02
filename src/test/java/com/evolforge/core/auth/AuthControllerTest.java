@@ -233,7 +233,7 @@ class AuthControllerTest {
         assertThat(refreshTokenRepository.findAll()).hasSize(1);
         RefreshToken storedToken = refreshTokenRepository.findAll().get(0);
         assertThat(storedToken.getToken()).isEqualTo(newLogin.refreshToken());
-        assertThat(storedToken.getCreatedAt()).isBeforeOrEqualsTo(Instant.now());
+        assertThat(storedToken.getCreatedAt()).isBeforeOrEqualTo(Instant.now());
     }
 
     @Test

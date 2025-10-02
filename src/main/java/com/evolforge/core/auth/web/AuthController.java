@@ -70,14 +70,14 @@ public class AuthController {
     @PostMapping(path = "/logout", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<Void>> logout(@Valid @RequestBody LogoutRequest request) {
         return Mono.fromRunnable(() -> authFacade.logout(request.refreshToken()))
-                .thenReturn(ResponseEntity.noContent().build())
+                .then(Mono.fromSupplier(AuthController::noContentResponse))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
     @PostMapping(path = "/verify-email/resend", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<Void>> resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
         return Mono.fromRunnable(() -> authFacade.resendVerificationEmail(request.email()))
-                .thenReturn(ResponseEntity.noContent().build())
+                .then(Mono.fromSupplier(AuthController::noContentResponse))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
@@ -91,21 +91,21 @@ public class AuthController {
     @PostMapping(path = "/password/forgot", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
         return Mono.fromRunnable(() -> authFacade.requestPasswordReset(request.email()))
-                .thenReturn(ResponseEntity.noContent().build())
+                .then(Mono.fromSupplier(AuthController::noContentResponse))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
     @PostMapping(path = "/password/reset", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Mono<ResponseEntity<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         return Mono.fromRunnable(() -> authFacade.resetPassword(request.token(), request.newPassword()))
-                .thenReturn(ResponseEntity.noContent().build())
+                .then(Mono.fromSupplier(AuthController::noContentResponse))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
     @GetMapping(path = "/google/authorize")
     public Mono<ResponseEntity<Void>> googleAuthorize(@RequestParam(value = "state", required = false) String state) {
         return Mono.fromCallable(() -> googleOAuthService.buildAuthorizationUrl(state))
-                .map(url -> ResponseEntity.status(HttpStatus.FOUND).location(URI.create(url)).build())
+                .map(url -> ResponseEntity.status(HttpStatus.FOUND).location(URI.create(url)).<Void>build())
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
@@ -126,6 +126,10 @@ public class AuthController {
         return Mono.fromCallable(() -> authFacade.currentUser(extractAccessToken(exchange)))
                 .map(AuthController::toCurrentUserResponse)
                 .subscribeOn(Schedulers.boundedElastic());
+    }
+
+    private static ResponseEntity<Void> noContentResponse() {
+        return ResponseEntity.noContent().build();
     }
 
     private static TokenResponse toTokenResponse(TokenPair pair) {

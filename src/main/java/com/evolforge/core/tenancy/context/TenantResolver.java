@@ -4,10 +4,13 @@ import com.evolforge.core.auth.service.dto.MembershipDescriptor;
 import com.evolforge.core.tenancy.domain.MembershipRole;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
@@ -27,14 +30,16 @@ public class TenantResolver implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         return resolveTenantContext(exchange)
-                .flatMap(tenantContext -> chain.filter(exchange)
-                        .contextWrite(ctx -> TenantContextHolder.put(ctx, tenantContext)))
-                .switchIfEmpty(chain.filter(exchange));
+                .map(Optional::of)
+                .defaultIfEmpty(Optional.empty())
+                .flatMap(optionalContext -> optionalContext
+                        .map(tenantContext -> chain.filter(exchange)
+                                .contextWrite(ctx -> TenantContextHolder.put(ctx, tenantContext)))
+                        .orElseGet(() -> chain.filter(exchange)));
     }
 
     private Mono<TenantContext> resolveTenantContext(ServerWebExchange exchange) {
-        return exchange.getPrincipal()
-                .cast(Authentication.class)
+        return currentAuthentication(exchange)
                 .filter(Authentication::isAuthenticated)
                 .flatMap(authentication -> {
                     Object principal = authentication.getPrincipal();
@@ -54,6 +59,15 @@ public class TenantResolver implements WebFilter {
                     }
                     return Mono.empty();
                 });
+    }
+
+    private Mono<Authentication> currentAuthentication(ServerWebExchange exchange) {
+        return ReactiveSecurityContextHolder.getContext()
+                .map(SecurityContext::getAuthentication)
+                .filter(authentication -> authentication != null)
+                .switchIfEmpty(exchange.getPrincipal()
+                        .filter(Authentication.class::isInstance)
+                        .cast(Authentication.class));
     }
 
     private UUID extractTenantId(String rawTenantId) {
