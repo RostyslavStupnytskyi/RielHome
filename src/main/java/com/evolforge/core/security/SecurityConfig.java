@@ -28,6 +28,8 @@ public class SecurityConfig {
             "/favicon.ico",
             "/swagger-ui.html",
             "/swagger-ui/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
             "/v3/api-docs/**"
     };
 
