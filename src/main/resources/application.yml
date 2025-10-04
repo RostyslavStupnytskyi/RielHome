@@ -20,8 +20,6 @@ spring:
       - classpath:db/migration
   jackson:
     time-zone: UTC
-  main:
-    web-application-type: reactive
   security:
     oauth2:
       client:

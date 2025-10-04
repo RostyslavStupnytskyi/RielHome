@@ -1,18 +1,18 @@
 package com.evolforge.core.api;
 
 import com.evolforge.core.auth.exception.AuthException;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolationException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.server.ServerWebExchange;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -50,8 +50,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGeneric(Exception exception, ServerWebExchange exchange) throws Exception {
-        if (exchange.getResponse().isCommitted()) {
+    public ResponseEntity<ApiError> handleGeneric(Exception exception, HttpServletResponse response) throws Exception {
+        if (response.isCommitted()) {
             throw exception;
         }
         String message = Optional.ofNullable(exception.getMessage())

@@ -4,17 +4,17 @@ import com.evolforge.core.tenancy.context.TenantContextHolder;
 import com.evolforge.core.tenancy.domain.MembershipRole;
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.function.Supplier;
 import org.springframework.security.authorization.AuthorizationDecision;
-import org.springframework.security.authorization.ReactiveAuthorizationManager;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.server.authorization.AuthorizationContext;
-import reactor.core.publisher.Mono;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
 /**
- * Reactive authorization manager that checks whether the current caller has one of the required roles
- * within the resolved tenant context.
+ * Authorization manager that checks whether the current caller has one of the required roles within the
+ * resolved tenant context.
  */
-public class TenantAccessGuard implements ReactiveAuthorizationManager<AuthorizationContext> {
+public class TenantAccessGuard implements AuthorizationManager<RequestAuthorizationContext> {
 
     private final Set<MembershipRole> allowedRoles;
 
@@ -35,12 +35,14 @@ public class TenantAccessGuard implements ReactiveAuthorizationManager<Authoriza
     }
 
     @Override
-    public Mono<AuthorizationDecision> check(Mono<Authentication> authentication, AuthorizationContext context) {
-        return authentication
-                .filter(Authentication::isAuthenticated)
-                .flatMap(auth -> TenantContextHolder.currentContext()
-                        .map(tenantContext -> new AuthorizationDecision(allowedRoles.contains(tenantContext.role())))
-                        .defaultIfEmpty(new AuthorizationDecision(false)))
-                .defaultIfEmpty(new AuthorizationDecision(false));
+    public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext context) {
+        Authentication auth = authentication.get();
+        if (auth == null || !auth.isAuthenticated()) {
+            return new AuthorizationDecision(false);
+        }
+        boolean allowed = TenantContextHolder.currentContext()
+                .map(tenantContext -> allowedRoles.contains(tenantContext.role()))
+                .orElse(false);
+        return new AuthorizationDecision(allowed);
     }
 }

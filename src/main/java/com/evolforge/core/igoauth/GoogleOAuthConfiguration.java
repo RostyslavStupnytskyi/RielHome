@@ -3,14 +3,14 @@ package com.evolforge.core.igoauth;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
 @Configuration
 @EnableConfigurationProperties(GoogleOAuthProperties.class)
 public class GoogleOAuthConfiguration {
 
     @Bean
-    public WebClient googleOAuthWebClient(WebClient.Builder builder) {
+    public RestClient googleOAuthRestClient(RestClient.Builder builder) {
         return builder.build();
     }
 }
