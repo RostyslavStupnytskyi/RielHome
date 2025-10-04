@@ -5,30 +5,37 @@ import com.evolforge.core.auth.service.JwtService;
 import com.evolforge.core.auth.service.dto.MembershipDescriptor;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import reactor.core.publisher.Mono;
 
-public class JwtReactiveAuthenticationManager implements ReactiveAuthenticationManager {
+public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private final JwtService jwtService;
 
-    public JwtReactiveAuthenticationManager(JwtService jwtService) {
+    public JwtAuthenticationProvider(JwtService jwtService) {
         this.jwtService = jwtService;
     }
 
     @Override
-    public Mono<Authentication> authenticate(Authentication authentication) {
+    public Authentication authenticate(Authentication authentication) {
         if (!(authentication instanceof JwtAuthenticationToken jwtToken)) {
-            return Mono.empty();
+            return null;
         }
         String token = (String) jwtToken.getCredentials();
-        return Mono.fromCallable(() -> jwtService.parse(token))
-                .map(details -> toAuthentication(details, token))
-                .onErrorMap(AuthException.class, ex -> new BadCredentialsException("Invalid access token", ex));
+        try {
+            JwtService.AccessTokenDetails details = jwtService.parse(token);
+            return toAuthentication(details, token);
+        } catch (AuthException ex) {
+            throw new BadCredentialsException("Invalid access token", ex);
+        }
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return JwtAuthenticationToken.class.isAssignableFrom(authentication);
     }
 
     private Authentication toAuthentication(JwtService.AccessTokenDetails details, String tokenValue) {

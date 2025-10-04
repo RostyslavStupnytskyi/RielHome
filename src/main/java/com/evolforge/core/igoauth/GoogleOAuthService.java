@@ -8,19 +8,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class GoogleOAuthService {
 
     private final GoogleOAuthProperties properties;
-    private final WebClient webClient;
+    private final RestClient restClient;
     private final SecureRandom secureRandom = new SecureRandom();
 
-    public GoogleOAuthService(GoogleOAuthProperties properties, WebClient googleOAuthWebClient) {
+    public GoogleOAuthService(GoogleOAuthProperties properties, RestClient googleOAuthRestClient) {
         this.properties = properties;
-        this.webClient = googleOAuthWebClient;
+        this.restClient = googleOAuthRestClient;
     }
 
     public String buildAuthorizationUrl(String stateHint) {
@@ -49,24 +49,22 @@ public class GoogleOAuthService {
         form.add("redirect_uri", properties.getRedirectUri());
         form.add("grant_type", "authorization_code");
 
-        GoogleTokenResponse tokenResponse = webClient.post()
+        GoogleTokenResponse tokenResponse = restClient.post()
                 .uri(properties.getTokenUri())
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .bodyValue(form)
+                .body(form)
                 .retrieve()
-                .bodyToMono(GoogleTokenResponse.class)
-                .block();
+                .body(GoogleTokenResponse.class);
 
         if (tokenResponse == null || !StringUtils.hasText(tokenResponse.accessToken())) {
             throw new IllegalStateException("Failed to exchange Google OAuth code");
         }
 
-        GoogleUserInfo userInfo = webClient.get()
+        GoogleUserInfo userInfo = restClient.get()
                 .uri(properties.getUserInfoUri())
                 .headers(headers -> headers.setBearerAuth(tokenResponse.accessToken()))
                 .retrieve()
-                .bodyToMono(GoogleUserInfo.class)
-                .block();
+                .body(GoogleUserInfo.class);
 
         if (userInfo == null) {
             throw new IllegalStateException("Failed to load Google user profile");
