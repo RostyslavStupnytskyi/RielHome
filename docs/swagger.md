@@ -19,4 +19,6 @@
 - **Expose only necessary endpoints**: Permit Swagger and OpenAPI paths explicitly in the security configuration to avoid exposing other internal routes unintentionally.
 - **Version your API**: Update the OpenAPI `Info` metadata (`title`, `version`, `description`) whenever introducing breaking changes.
 - **Keep dependencies updated**: Regularly review `springdoc-openapi` for updates to stay compatible with new Spring Boot releases and security patches.
+- **Pin a compatible SpringDoc version**: If you observe 404 errors for `swagger-ui/index.html` after a Spring Boot upgrade, explicitly depend on `springdoc-openapi-starter-webflux-ui` version `2.4.0`, which bundles the working Swagger UI resources.
+- **Enable WebJar resolution**: Make sure the project depends on `webjars-locator-core` so that the versioned Swagger UI assets resolve correctly when running on Spring WebFlux.
 
