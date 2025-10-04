@@ -25,7 +25,10 @@ public class SecurityConfig {
             "/api/auth/**",
             "/",
             "/index.html",
-            "/favicon.ico"
+            "/favicon.ico",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
+            "/v3/api-docs/**"
     };
 
     private static final String[] PUBLIC_STATIC_RESOURCES = {
